@@ -3,6 +3,7 @@ package com.sangdol.experiment.portableDb;
 import java.util.List;
 
 /**
+ * TODO See if this layer needed
  * @author hugh
  */
 public class ViewService {
@@ -13,7 +14,6 @@ public class ViewService {
     }
 
     public List<View> getLatest10Visitors(int userId) {
-        // TODO exclude view which is older than 10 days
         return viewDao.getLatest10Visitors(userId);
     }
 

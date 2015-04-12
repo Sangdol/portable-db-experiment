@@ -29,8 +29,6 @@ public class View {
     @SuppressWarnings("unused")
     @JsonProperty
     public String getDate() {
-        // TODO put date format in config
-        DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
-        return date.toString(fmt);
+        return date.toString(ViewDao.fmt);
     }
 }

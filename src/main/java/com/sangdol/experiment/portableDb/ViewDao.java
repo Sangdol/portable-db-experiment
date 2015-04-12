@@ -12,18 +12,22 @@ import java.util.List;
  * @author hugh
  */
 public class ViewDao {
+    public static final DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+
     public List<View> getLatest10Visitors(int userId) {
         List<View> views = new ArrayList<>();
         try (Connection connection = getConnection()) {
             Statement statement = connection.createStatement();
             statement.setQueryTimeout(30); // TODO set globally
 
+            String tenDaysAgo = DateTime.now().minusDays(10).toString(fmt);
             ResultSet rs = statement.executeQuery(String.format(
-                    "SELECT visitor_id, date FROM view WHERE host_id = %d ORDER BY id DESC LIMIT 10", userId));
+                    " SELECT visitor_id, date FROM view " +
+                    " WHERE host_id = %d AND date > '%s' " +
+                    " ORDER BY id DESC LIMIT 10", userId, tenDaysAgo));
 
             while (rs.next()) {
                 int visitorId = rs.getInt("visitor_id");
-                DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
                 DateTime date = fmt.parseDateTime(rs.getString("date"));
                 views.add(new View(visitorId, date));
             }
@@ -42,7 +46,6 @@ public class ViewDao {
             Statement statement = connection.createStatement();
             statement.setQueryTimeout(30); // TODO set globally
 
-            DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
             String date = now.toString(fmt);
             statement.executeUpdate(String.format(
                    "INSERT INTO view (host_id, visitor_id, date) VALUES (%d, %d, '%s')", hostId, visitorId, date));
