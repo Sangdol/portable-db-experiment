@@ -16,4 +16,8 @@ public class ViewService {
         // TODO exclude view which is older than 10 days
         return viewDao.getLatest10Visitors(userId);
     }
+
+    public View createView(int hostId, int visitorId) {
+        return viewDao.createView(hostId, visitorId);
+    }
 }

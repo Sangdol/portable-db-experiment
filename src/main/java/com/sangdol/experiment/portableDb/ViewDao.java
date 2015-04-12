@@ -13,16 +13,13 @@ import java.util.List;
  */
 public class ViewDao {
     public List<View> getLatest10Visitors(int userId) {
-        Connection connection = null;
         List<View> views = new ArrayList<>();
-        try {
-            // TODO take the connection string out
-            connection = DriverManager.getConnection("jdbc:sqlite:view.db");
+        try (Connection connection = getConnection()) {
             Statement statement = connection.createStatement();
-            statement.setQueryTimeout(30);
+            statement.setQueryTimeout(30); // TODO set globally
 
             ResultSet rs = statement.executeQuery(String.format(
-                    "SELECT visitor_id, date FROM view WHERE host_id = %d LIMIT 10", userId));
+                    "SELECT visitor_id, date FROM view WHERE host_id = %d ORDER BY id DESC LIMIT 10", userId));
 
             while (rs.next()) {
                 int visitorId = rs.getInt("visitor_id");
@@ -31,18 +28,35 @@ public class ViewDao {
                 views.add(new View(visitorId, date));
             }
         } catch (SQLException e) {
-            // TODO exception handling
+            // TODO exception handling. e.g. no table exist
             System.err.println(e.getMessage());
-        } finally {
-            try {
-                if (connection != null)
-                    connection.close();
-            } catch (SQLException e) {
-                // TODO exception handling
-                System.err.println(e);
-            }
         }
 
         return views;
+    }
+
+    public View createView(int hostId, int visitorId) {
+        DateTime now = DateTime.now();
+
+        try (Connection connection = getConnection()) {
+            Statement statement = connection.createStatement();
+            statement.setQueryTimeout(30); // TODO set globally
+
+            DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+            String date = now.toString(fmt);
+            statement.executeUpdate(String.format(
+                   "INSERT INTO view (host_id, visitor_id, date) VALUES (%d, %d, '%s')", hostId, visitorId, date));
+
+        } catch (SQLException e) {
+            // TODO exception handling
+            System.err.println(e.getMessage());
+        }
+
+        return new View(visitorId, now);
+    }
+
+    private Connection getConnection() throws SQLException {
+        // TODO take the connection string out
+        return DriverManager.getConnection("jdbc:sqlite:view.db");
     }
 }

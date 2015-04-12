@@ -24,4 +24,14 @@ public class ViewResource {
     public List<View> viewList(@PathParam("id") int userId) {
         return viewService.getLatest10Visitors(userId);
     }
+
+    @POST
+    @Path("{id}")
+    @Timed
+    public View createView(@PathParam("id") int hostId, @QueryParam("visitor_id") int visitorId) {
+        if (visitorId == 0)
+            return null;
+
+        return viewService.createView(hostId, visitorId);
+    }
 }
