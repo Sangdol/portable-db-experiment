@@ -32,8 +32,7 @@ public class ViewDao {
                 views.add(new View(visitorId, date));
             }
         } catch (SQLException e) {
-            // TODO exception handling. e.g. no table exist
-            System.err.println(e.getMessage());
+            throw new RuntimeException(e);
         }
 
         return views;
@@ -51,8 +50,7 @@ public class ViewDao {
                    "INSERT INTO view (host_id, visitor_id, date) VALUES (%d, %d, '%s')", hostId, visitorId, date));
 
         } catch (SQLException e) {
-            // TODO exception handling
-            System.err.println(e.getMessage());
+            throw new RuntimeException(e);
         }
 
         return new View(visitorId, now);
