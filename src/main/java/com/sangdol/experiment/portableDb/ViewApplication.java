@@ -9,6 +9,8 @@ import io.dropwizard.setup.Environment;
  */
 public class ViewApplication extends Application<ViewConfiguration>{
     public static void main(String[] args) throws Exception{
+        Class.forName("org.sqlite.JDBC");
+
         new ViewApplication().run(args);
     }
 
@@ -24,7 +26,9 @@ public class ViewApplication extends Application<ViewConfiguration>{
 
     @Override
     public void run(ViewConfiguration configuration, Environment environment) {
-        final ViewResource resource = new ViewResource();
+        final ViewDao viewDao = new ViewDao();
+        final ViewService viewService = new ViewService(viewDao);
+        final ViewResource resource = new ViewResource(viewService);
         environment.jersey().register(resource);
     }
 }

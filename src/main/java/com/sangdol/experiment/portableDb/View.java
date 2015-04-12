@@ -1,30 +1,36 @@
 package com.sangdol.experiment.portableDb;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import java.util.Date;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 /**
  * @author hugh
  */
 public class View {
     private int userId;
-    private Date date;
+    private DateTime date;
 
+    @SuppressWarnings("unused") // Used by Jackson
     public View() {}
 
-    public View(int userId, Date date) {
+    public View(int userId, DateTime date) {
         this.userId = userId;
         this.date = date;
     }
 
+    @SuppressWarnings("unused")
     @JsonProperty
     public int getUserId() {
         return userId;
     }
 
+    @SuppressWarnings("unused")
     @JsonProperty
-    public Date getDate() {
-        return date;
+    public String getDate() {
+        // TODO put date format in config
+        DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+        return date.toString(fmt);
     }
 }
