@@ -1,5 +1,6 @@
 package com.sangdol.experiment.portableDb;
 
+import org.h2.jdbcx.JdbcDataSource;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -12,7 +13,7 @@ import java.util.List;
  * @author hugh
  */
 public class ViewDao {
-    public static final DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+    public static final DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
     public List<View> getLatest10Visitors(int userId) {
         List<View> views = new ArrayList<>();
@@ -45,9 +46,8 @@ public class ViewDao {
             Statement statement = connection.createStatement();
             statement.setQueryTimeout(30); // TODO set globally
 
-            String date = now.toString(fmt);
             statement.executeUpdate(String.format(
-                   "INSERT INTO view (host_id, visitor_id, date) VALUES (%d, %d, '%s')", hostId, visitorId, date));
+                   "INSERT INTO view (host_id, visitor_id, date) VALUES (%d, %d, NOW())", hostId, visitorId));
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -58,6 +58,10 @@ public class ViewDao {
 
     private Connection getConnection() throws SQLException {
         // TODO take the connection string out
-        return DriverManager.getConnection("jdbc:sqlite:view.db");
+        JdbcDataSource ds = new JdbcDataSource();
+        ds.setURL("jdbc:h2:./view");
+        ds.setUser("sa");
+        ds.setPassword("");
+        return ds.getConnection();
     }
 }

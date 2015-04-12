@@ -2,8 +2,6 @@ package com.sangdol.experiment.portableDb;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 /**
  * @author hugh

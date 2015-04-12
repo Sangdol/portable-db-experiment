@@ -9,7 +9,7 @@ import io.dropwizard.setup.Environment;
  */
 public class ViewApplication extends Application<ViewConfiguration>{
     public static void main(String[] args) throws Exception{
-        Class.forName("org.sqlite.JDBC");
+        Class.forName("org.h2.Driver");
 
         new ViewApplication().run(args);
     }

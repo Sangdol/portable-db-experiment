@@ -11,5 +11,5 @@
 ### Maven ###
 target/
 
-### SQLite ###
+### Embedded DB ###
 *.db
