@@ -42,4 +42,11 @@ public class ViewResource {
         viewService.clear();
         return "Success";
     }
+
+    @GET
+    @Path("view-count")
+    @Timed
+    public String viewCount() {
+        return viewService.getViewCount();
+    }
 }

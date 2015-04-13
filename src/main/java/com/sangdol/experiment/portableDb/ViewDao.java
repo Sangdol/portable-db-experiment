@@ -76,4 +76,15 @@ public class ViewDao {
             throw new RuntimeException(e);
         }
     }
+
+    public String getViewCount() {
+        try (Connection connection = cp.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("SELECT COUNT(*) cnt FROM view");
+            ResultSet rs = statement.executeQuery();
+            rs.next();
+            return String.valueOf(rs.getInt("cnt"));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

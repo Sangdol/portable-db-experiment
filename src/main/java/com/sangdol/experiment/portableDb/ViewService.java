@@ -24,4 +24,8 @@ public class ViewService {
     public void clear() {
         viewDao.clear();
     }
+
+    public String getViewCount() {
+        return viewDao.getViewCount();
+    }
 }
