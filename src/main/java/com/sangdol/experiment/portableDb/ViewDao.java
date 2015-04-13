@@ -60,4 +60,19 @@ public class ViewDao {
 
         return new View(visitorId, now);
     }
+
+    public void clear() {
+        try (Connection connection = cp.getConnection()) {
+            Statement statement = connection.createStatement();
+            statement.executeUpdate(
+                    " DELETE FROM view where id IN " +
+                        " (SELECT id FROM " +
+                            " (SELECT id, (SELECT count(*) FROM view v2 WHERE v1.id <= v2.id AND v1.host_id = v2.host_id) AS rank " +
+                                " FROM view v1 ORDER BY id DESC) sub " +
+                    " WHERE rank > 10) "
+            );
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

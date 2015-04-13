@@ -20,4 +20,8 @@ public class ViewService {
     public View createView(int hostId, int visitorId) {
         return viewDao.createView(hostId, visitorId);
     }
+
+    public void clear() {
+        viewDao.clear();
+    }
 }

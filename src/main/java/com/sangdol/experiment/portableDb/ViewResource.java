@@ -34,4 +34,12 @@ public class ViewResource {
 
         return viewService.createView(hostId, visitorId);
     }
+
+    @POST
+    @Path("clear")
+    @Timed
+    public String clear() {
+        viewService.clear();
+        return "Success";
+    }
 }
