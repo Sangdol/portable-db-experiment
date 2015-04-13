@@ -24,13 +24,13 @@ public class ViewDao {
     public List<View> getLatest10Visitors(int userId) {
         List<View> views = new ArrayList<>();
         try (Connection connection = cp.getConnection()) {
-            Statement statement = connection.createStatement();
-
-            String tenDaysAgo = DateTime.now().minusDays(10).toString(fmt);
-            ResultSet rs = statement.executeQuery(String.format(
+            PreparedStatement statement = connection.prepareStatement(
                     " SELECT visitor_id, date FROM view " +
-                    " WHERE host_id = %d AND date > '%s' " +
-                    " ORDER BY id DESC LIMIT 10", userId, tenDaysAgo));
+                    " WHERE host_id = ? AND date > DATEADD('DAY', -10, NOW()) " +
+                    " ORDER BY id DESC LIMIT 10");
+            statement.setInt(1, userId);
+
+            ResultSet rs = statement.executeQuery();
 
             while (rs.next()) {
                 int visitorId = rs.getInt("visitor_id");
@@ -49,11 +49,11 @@ public class ViewDao {
         DateTime now = DateTime.now();
 
         try (Connection connection = cp.getConnection()) {
-            Statement statement = connection.createStatement();
-
-            statement.executeUpdate(String.format(
-                   "INSERT INTO view (host_id, visitor_id, date) VALUES (%d, %d, NOW())", hostId, visitorId));
-
+            PreparedStatement statement = connection.prepareStatement(
+                    "INSERT INTO view (host_id, visitor_id, date) VALUES (?, ?, NOW())");
+            statement.setInt(1, hostId);
+            statement.setInt(2, visitorId);
+            statement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -63,14 +63,15 @@ public class ViewDao {
 
     public void clear() {
         try (Connection connection = cp.getConnection()) {
-            Statement statement = connection.createStatement();
-            statement.executeUpdate(
+            PreparedStatement statement = connection.prepareStatement(
                     " DELETE FROM view where id IN " +
                         " (SELECT id FROM " +
                             " (SELECT id, (SELECT count(*) FROM view v2 WHERE v1.id <= v2.id AND v1.host_id = v2.host_id) AS rank " +
                                 " FROM view v1 ORDER BY id DESC) sub " +
                     " WHERE rank > 10) "
             );
+
+            statement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
