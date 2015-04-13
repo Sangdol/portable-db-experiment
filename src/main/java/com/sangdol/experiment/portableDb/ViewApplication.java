@@ -9,8 +9,6 @@ import io.dropwizard.setup.Environment;
  */
 public class ViewApplication extends Application<ViewConfiguration>{
     public static void main(String[] args) throws Exception{
-        Class.forName("org.h2.Driver");
-
         new ViewApplication().run(args);
     }
 
@@ -25,7 +23,7 @@ public class ViewApplication extends Application<ViewConfiguration>{
     }
 
     @Override
-    public void run(ViewConfiguration configuration, Environment environment) {
+    public void run(ViewConfiguration configuration, Environment environment) throws ClassNotFoundException {
         final ViewDao viewDao = new ViewDao();
         final ViewService viewService = new ViewService(viewDao);
         final ViewResource resource = new ViewResource(viewService);
