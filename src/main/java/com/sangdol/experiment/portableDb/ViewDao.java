@@ -17,8 +17,34 @@ public class ViewDao {
     private static final JdbcConnectionPool cp = JdbcConnectionPool.create("jdbc:h2:./view", "sa", "");
 
     public ViewDao() throws ClassNotFoundException {
+        // Need to load the driver first
+        // http://www.h2database.com/html/tutorial.html#connecting_using_jdbc
         Class.forName("org.h2.Driver");
         cp.setMaxConnections(50);
+
+        createTableIfNotExist();
+    }
+
+    private void createTableIfNotExist() {
+        try (Connection connection = cp.getConnection()) {
+            // Refer to
+            // - Create Table http://www.h2database.com/html/grammar.html#create_table
+            // - Create Index http://www.h2database.com/html/grammar.html#create_index
+            PreparedStatement statement = connection.prepareStatement(
+                    " CREATE TABLE IF NOT EXISTS view ( " +
+                        " id BIGINT PRIMARY KEY AUTO_INCREMENT, " +
+                        " host_id INT, " +
+                        " visitor_id INT, " +
+                        " date DATETIME " +
+                    " ); " +
+                    // As there's no way to create indices while creating a table in H2,
+                    // we need to try making this index every time.
+                    " CREATE INDEX ON view (host_id); "
+            );
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public List<View> getLatest10Visitors(int userId) {
@@ -66,7 +92,7 @@ public class ViewDao {
             PreparedStatement statement = connection.prepareStatement(
                     " DELETE FROM view where id IN " +
                         " (SELECT id FROM " +
-                            " (SELECT id, (SELECT count(*) FROM view v2 WHERE v1.id <= v2.id AND v1.host_id = v2.host_id) AS rank " +
+                            " (SELECT id, (SELECT COUNT(*) FROM view v2 WHERE v1.id <= v2.id AND v1.host_id = v2.host_id) AS rank " +
                                 " FROM view v1 ORDER BY id DESC) sub " +
                     " WHERE rank > 10) "
             );
