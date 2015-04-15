@@ -20,18 +20,21 @@ public class ViewDao {
         // Need to load the driver first
         // http://www.h2database.com/html/tutorial.html#connecting_using_jdbc
         Class.forName("org.h2.Driver");
-        cp.setMaxConnections(50);
+        cp.setMaxConnections(50);   // TODO What would be a good max connection count?
 
         createTableIfNotExist();
     }
 
     private void createTableIfNotExist() {
         try (Connection connection = cp.getConnection()) {
+            if (hasCreatedTables(connection))
+                return;
+
             // Refer to
             // - Create Table http://www.h2database.com/html/grammar.html#create_table
             // - Create Index http://www.h2database.com/html/grammar.html#create_index
             PreparedStatement statement = connection.prepareStatement(
-                    " CREATE TABLE IF NOT EXISTS view ( " +
+                    " CREATE TABLE view ( " +
                         " id BIGINT PRIMARY KEY AUTO_INCREMENT, " +
                         " host_id INT, " +
                         " visitor_id INT, " +
@@ -45,6 +48,13 @@ public class ViewDao {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private boolean hasCreatedTables(Connection connection) throws SQLException {
+        // You need to search tables in upper case even if you created tables in lower case
+        ResultSet meta = connection.getMetaData().getTables(null, null, "VIEW%", new String[]{"TABLE"});
+        meta.last();
+        return meta.getRow() > 0;
     }
 
     public List<View> getLatest10Visitors(int userId) {
