@@ -9,12 +9,14 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.sangdol.experiment.portableDb.ViewTable.TABLE_PREFIX;
+
 /**
  * @author hugh
  */
 public class ViewDao {
     public static final DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS");
-    private static final JdbcConnectionPool cp = JdbcConnectionPool.create("jdbc:h2:./view", "sa", "");
+    private static final JdbcConnectionPool cp = JdbcConnectionPool.create("jdbc:h2:./view", "sa", ""); // TODO move to config
 
     public ViewDao() throws ClassNotFoundException {
         // Need to load the driver first
@@ -30,20 +32,7 @@ public class ViewDao {
             if (hasCreatedTables(connection))
                 return;
 
-            // Refer to
-            // - Create Table http://www.h2database.com/html/grammar.html#create_table
-            // - Create Index http://www.h2database.com/html/grammar.html#create_index
-            PreparedStatement statement = connection.prepareStatement(
-                    " CREATE TABLE view ( " +
-                        " id BIGINT PRIMARY KEY AUTO_INCREMENT, " +
-                        " host_id INT, " +
-                        " visitor_id INT, " +
-                        " date DATETIME " +
-                    " ); " +
-                    // As there's no way to create indices while creating a table in H2,
-                    // we need to try making this index every time.
-                    " CREATE INDEX ON view (host_id); "
-            );
+            PreparedStatement statement = connection.prepareStatement(getCreateTablesQuery());
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -52,18 +41,39 @@ public class ViewDao {
 
     private boolean hasCreatedTables(Connection connection) throws SQLException {
         // You need to search tables in upper case even if you created tables in lower case
-        ResultSet meta = connection.getMetaData().getTables(null, null, "VIEW%", new String[]{"TABLE"});
+        ResultSet meta = connection.getMetaData().getTables(null, null,
+                TABLE_PREFIX.toUpperCase() + "%", new String[]{"TABLE"});
         meta.last();
         return meta.getRow() > 0;
+    }
+
+    /**
+     * Refer to
+     * - Create Table http://www.h2database.com/html/grammar.html#create_table
+     * - Create Index http://www.h2database.com/html/grammar.html#create_index
+     */
+    private String getCreateTablesQuery() {
+        StringBuilder sb = new StringBuilder();
+        for (String tableName : ViewTable.getNames()) {
+            sb.append(String.format(" CREATE TABLE %s ( ", tableName));
+            sb.append(" id BIGINT PRIMARY KEY AUTO_INCREMENT, ");
+            sb.append(" host_id INT, ");
+            sb.append(" visitor_id INT, ");
+            sb.append(" date DATETIME ");
+            sb.append(" ); ");
+            sb.append(String.format(" CREATE INDEX ON %s (host_id); ", tableName));
+        }
+
+        return sb.toString();
     }
 
     public List<View> getLatest10Visitors(int userId) {
         List<View> views = new ArrayList<>();
         try (Connection connection = cp.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(
-                    " SELECT visitor_id, date FROM view " +
-                    " WHERE host_id = ? AND date > DATEADD('DAY', -10, NOW()) " +
-                    " ORDER BY id DESC LIMIT 10");
+            PreparedStatement statement = connection.prepareStatement(String.format(
+                    " SELECT visitor_id, date FROM %s " +
+                            " WHERE host_id = ? AND date > DATEADD('DAY', -10, NOW()) " +
+                            " ORDER BY id DESC LIMIT 10", TABLE_PREFIX));
             statement.setInt(1, userId);
 
             ResultSet rs = statement.executeQuery();
@@ -85,8 +95,8 @@ public class ViewDao {
         DateTime now = DateTime.now();
 
         try (Connection connection = cp.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(
-                    "INSERT INTO view (host_id, visitor_id, date) VALUES (?, ?, NOW())");
+            PreparedStatement statement = connection.prepareStatement(String.format(
+                    "INSERT INTO %s (host_id, visitor_id, date) VALUES (?, ?, NOW())", TABLE_PREFIX));
             statement.setInt(1, hostId);
             statement.setInt(2, visitorId);
             statement.executeUpdate();
@@ -99,13 +109,13 @@ public class ViewDao {
 
     public void clear() {
         try (Connection connection = cp.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(
-                    " DELETE FROM view where id IN " +
+            PreparedStatement statement = connection.prepareStatement(String.format(
+                    " DELETE FROM %s where id IN " +
                         " (SELECT id FROM " +
-                            " (SELECT id, (SELECT COUNT(*) FROM view v2 WHERE v1.id <= v2.id AND v1.host_id = v2.host_id) AS rank " +
-                                " FROM view v1 ORDER BY id DESC) sub " +
+                            " (SELECT id, (SELECT COUNT(*) FROM %s v2 WHERE v1.id <= v2.id AND v1.host_id = v2.host_id) AS rank " +
+                                " FROM %s v1 ORDER BY id DESC) sub " +
                     " WHERE rank > 10) "
-            );
+            , TABLE_PREFIX, TABLE_PREFIX, TABLE_PREFIX));
 
             statement.executeUpdate();
         } catch (SQLException e) {
