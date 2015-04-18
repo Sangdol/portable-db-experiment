@@ -13,3 +13,6 @@ target/
 
 ### Embedded DB ###
 *.db
+
+### maven shade plugin
+dependency-reduced-pom.xml
