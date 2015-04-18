@@ -24,7 +24,9 @@ public class ViewApplication extends Application<ViewConfiguration>{
 
     @Override
     public void run(ViewConfiguration configuration, Environment environment) throws ClassNotFoundException {
-        final ViewDao viewDao = new ViewDao();
+        final ViewTable viewTable = new ViewTable();
+        final ViewQuery viewQuery = new ViewQuery(viewTable);
+        final ViewDao viewDao = new ViewDao(viewQuery);
         final ViewService viewService = new ViewService(viewDao);
         final ViewResource resource = new ViewResource(viewService);
         environment.jersey().register(resource);

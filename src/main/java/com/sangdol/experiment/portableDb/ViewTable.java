@@ -17,7 +17,13 @@ public class ViewTable {
         }
     }
 
-    public static List<String> getNames() {
+    public List<String> getAll() {
         return names;
+    }
+
+    public String get(int userId) {
+        final int HOST_COUNT_IN_TABLE = 100;
+        int tableNumber = (userId - 1) / HOST_COUNT_IN_TABLE;
+        return TABLE_PREFIX + tableNumber;
     }
 }
