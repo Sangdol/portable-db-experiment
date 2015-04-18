@@ -64,7 +64,7 @@ public class ViewQueryTest {
                             " FROM table2 v1 ORDER BY id DESC) sub " +
                 " WHERE rank > 10); ";
 
-        assertThat(viewQuery.getDeleteOver10(), is(queries));
+        assertThat(viewQuery.getDeleteAllExceptRecent10(), is(queries));
     }
 
     @Test
@@ -81,5 +81,15 @@ public class ViewQueryTest {
     public void testGetInsert() {
         String query = "INSERT INTO table1 (host_id, visitor_id, date) VALUES (?, ?, NOW())";
         assertThat(viewQuery.getInsert(USER_ID), is(query));
+    }
+
+    @Test
+    public void testGetSelectAllCounts() {
+        String queries =
+                " SELECT COUNT(*) FROM table1" +
+                " UNION ALL " +
+                " SELECT COUNT(*) FROM table2";
+
+        assertThat(viewQuery.getSelectAllCounts(), is(queries));
     }
 }

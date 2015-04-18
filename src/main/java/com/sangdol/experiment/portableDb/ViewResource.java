@@ -43,10 +43,10 @@ public class ViewResource {
         return "Success";
     }
 
-//    @GET
-//    @Path("view-count")
-//    @Timed
-//    public String viewCount() {
-//        return viewService.getViewCount();
-//    }
+    @GET
+    @Path("view-count")
+    @Timed
+    public List<Integer> viewCount() {
+        return viewService.getAllViewCounts();
+    }
 }

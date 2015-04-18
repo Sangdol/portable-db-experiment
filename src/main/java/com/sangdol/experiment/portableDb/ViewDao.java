@@ -16,10 +16,11 @@ import static com.sangdol.experiment.portableDb.ViewTable.TABLE_PREFIX;
  */
 public class ViewDao {
     public static final DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS");
-    private static final JdbcConnectionPool cp = JdbcConnectionPool.create("jdbc:h2:./view", "sa", ""); // TODO move to config
+    private final JdbcConnectionPool cp;
     private final ViewQuery viewQuery;
 
-    public ViewDao(ViewQuery viewQuery) throws ClassNotFoundException {
+    public ViewDao(JdbcConnectionPool cp, ViewQuery viewQuery) throws ClassNotFoundException {
+        this.cp = cp;
         this.viewQuery = viewQuery;
 
         // Need to load the driver first
@@ -52,12 +53,12 @@ public class ViewDao {
     }
 
 
-    public List<View> getLatest10Visitors(int userId) {
+    public List<View> getLatest10Visitors(int hostId) {
         List<View> views = new ArrayList<>();
         try (Connection connection = cp.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(
-                    viewQuery.getSelectLatest10(userId));
-            statement.setInt(1, userId);
+                    viewQuery.getSelectLatest10(hostId));
+            statement.setInt(1, hostId);
 
             ResultSet rs = statement.executeQuery();
 
@@ -92,24 +93,28 @@ public class ViewDao {
 
     public void clear() {
         try (Connection connection = cp.getConnection()) {
-
             PreparedStatement statement = connection.prepareStatement(
-                    viewQuery.getDeleteOver10());
+                    viewQuery.getDeleteAllExceptRecent10());
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-//    public Map<String, Integer> getViewCount() {
-//        try (Connection connection = cp.getConnection()) {
-//            PreparedStatement statement = connection.prepareStatement(
-//                    viewQuery.getSelectCount(table));
-//            ResultSet rs = statement.executeQuery();
-//            rs.next();
-//            return String.valueOf(rs.getInt("cnt"));
-//        } catch (SQLException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
+    public List<Integer> getAllViewCounts() {
+        try (Connection connection = cp.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(
+                    viewQuery.getSelectAllCounts());
+            ResultSet rs = statement.executeQuery();
+
+            List<Integer> counts = new ArrayList<>();
+            while (rs.next()) {
+                counts.add(rs.getInt(1));
+            }
+
+            return counts;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

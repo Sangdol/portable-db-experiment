@@ -21,6 +21,7 @@ public class ViewTable {
         return names;
     }
 
+    // TODO throw exception when trying to get a not existing table
     public String get(int userId) {
         final int HOST_COUNT_IN_TABLE = 100;
         int tableNumber = (userId - 1) / HOST_COUNT_IN_TABLE;

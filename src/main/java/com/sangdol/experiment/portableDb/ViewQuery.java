@@ -23,8 +23,7 @@ public class ViewQuery {
         StringBuilder sb = new StringBuilder();
         for (String table : viewTable.getAll()) {
             // Create Table
-            sb.append(" CREATE TABLE ");
-            sb.append(table);
+            sb.append(" CREATE TABLE ").append(table);
             sb.append(" ( ");
             sb.append(" id BIGINT PRIMARY KEY AUTO_INCREMENT, ");
             sb.append(" host_id INT, ");
@@ -32,26 +31,25 @@ public class ViewQuery {
             sb.append(" date DATETIME ");
             sb.append(" ); ");
             // Create Index
-            sb.append(" CREATE INDEX ON ");
-            sb.append(table);
+            sb.append(" CREATE INDEX ON ").append(table);
             sb.append(" (host_id); ");
         }
 
         return sb.toString();
     }
 
-    public String getDeleteOver10() {
+    /**
+     * Returns queries which delete rows except recent 10 rows from all tables.
+     */
+    public String getDeleteAllExceptRecent10() {
         StringBuilder sb = new StringBuilder();
         for (String table : viewTable.getAll()) {
-            sb.append(" DELETE FROM ");
-            sb.append(table);
+            sb.append(" DELETE FROM ").append(table);
             sb.append(" where id IN ");
             sb.append(" (SELECT id FROM ");
-            sb.append(" (SELECT id, (SELECT COUNT(*) FROM ");
-            sb.append(table);
+            sb.append(" (SELECT id, (SELECT COUNT(*) FROM ").append(table);
             sb.append(" v2 WHERE v1.id <= v2.id AND v1.host_id = v2.host_id) AS rank ");
-            sb.append(" FROM ");
-            sb.append(table);
+            sb.append(" FROM ").append(table);
             sb.append(" v1 ORDER BY id DESC) sub ");
             sb.append(" WHERE rank > 10); ");
         }
@@ -68,5 +66,19 @@ public class ViewQuery {
     public String getInsert(int userId) {
         return String.format("INSERT INTO %s (host_id, visitor_id, date) VALUES (?, ?, NOW())",
                 viewTable.get(userId));
+    }
+
+    /**
+     * Returns queries which select count(*) of all tables.
+     */
+    public String getSelectAllCounts() {
+        String UNION = "";
+        StringBuilder sb = new StringBuilder();
+        for (String table : viewTable.getAll()) {
+            sb.append(UNION).append(" SELECT COUNT(*) FROM ").append(table);
+            UNION = " UNION ALL ";
+        }
+
+        return sb.toString();
     }
 }
