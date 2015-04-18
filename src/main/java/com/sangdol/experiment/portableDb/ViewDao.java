@@ -28,10 +28,14 @@ public class ViewDao {
         Class.forName("org.h2.Driver");
 
         cp.setMaxConnections(50);   // TODO What would be a good max connection count?
-        createTableIfNotExist();
+        createTablesIfNotExist();
     }
 
-    private void createTableIfNotExist() {
+    /**
+     * Creates tables to run the server properly.
+     * In practice, we need some other batch jobs for creating tables.
+     */
+    private void createTablesIfNotExist() {
         try (Connection connection = cp.getConnection()) {
             if (hasCreatedTables(connection))
                 return;

@@ -1,7 +1,7 @@
 package com.sangdol.experiment.portableDb;
 
 /**
- * Query generating class.
+ * SQL queries generating class.
  * Please check the test code to see more readable queries.
  *
  * @author hugh
@@ -56,13 +56,20 @@ public class ViewQuery {
         return sb.toString();
     }
 
-    public String getSelectLatest10(int userId) {
+    /**
+     * Returns query which select recent 10 visitors of the host.
+     * Older than 10-day records are excluded.
+     */
+    public String getSelectLatest10(int hostId) {
         return String.format(
                 " SELECT visitor_id, date FROM %s " +
                 " WHERE host_id = ? AND date > DATEADD('DAY', -10, NOW()) " +
-                " ORDER BY id DESC LIMIT 10 ", viewTable.get(userId));
+                " ORDER BY id DESC LIMIT 10 ", viewTable.get(hostId));
     }
 
+    /**
+     * Returns query which insert view data into a table.
+     */
     public String getInsert(int userId) {
         return String.format("INSERT INTO %s (host_id, visitor_id, date) VALUES (?, ?, NOW())",
                 viewTable.get(userId));
