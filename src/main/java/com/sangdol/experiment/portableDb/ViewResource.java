@@ -20,7 +20,6 @@ public class ViewResource {
 
     @GET
     @Path("{id}")
-    @Timed
     public List<View> viewList(@PathParam("id") int hostId) {
         checkValidity(hostId);
 
@@ -29,7 +28,6 @@ public class ViewResource {
 
     @POST
     @Path("{id}")
-    @Timed
     public int createView(@PathParam("id") int hostId, @QueryParam("visitor_id") int visitorId) {
         checkValidity(visitorId);
 
@@ -43,7 +41,6 @@ public class ViewResource {
 
     @POST
     @Path("clear")
-    @Timed
     public String clear() {
         viewService.clear();
         return "Success";
@@ -51,7 +48,6 @@ public class ViewResource {
 
     @GET
     @Path("view-counts")
-    @Timed
     public List<Integer> viewCount() {
         return viewService.getAllViewCounts();
     }
