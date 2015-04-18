@@ -21,18 +21,24 @@ public class ViewResource {
     @GET
     @Path("{id}")
     @Timed
-    public List<View> viewList(@PathParam("id") int userId) {
-        return viewService.getLatest10Visitors(userId);
+    public List<View> viewList(@PathParam("id") int hostId) {
+        checkValidity(hostId);
+
+        return viewService.getLatest10Visitors(hostId);
     }
 
     @POST
     @Path("{id}")
     @Timed
     public int createView(@PathParam("id") int hostId, @QueryParam("visitor_id") int visitorId) {
-        if (visitorId == 0)
-            return 0;   // TODO throw 404
+        checkValidity(visitorId);
 
         return viewService.createView(hostId, visitorId);
+    }
+
+    private void checkValidity(int userId) {
+        if (userId < 1)
+            throw new WebApplicationException(404);
     }
 
     @POST
@@ -44,7 +50,7 @@ public class ViewResource {
     }
 
     @GET
-    @Path("view-count")
+    @Path("view-counts")
     @Timed
     public List<Integer> viewCount() {
         return viewService.getAllViewCounts();
