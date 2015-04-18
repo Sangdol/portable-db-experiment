@@ -28,9 +28,9 @@ public class ViewResource {
     @POST
     @Path("{id}")
     @Timed
-    public View createView(@PathParam("id") int hostId, @QueryParam("visitor_id") int visitorId) {
+    public int createView(@PathParam("id") int hostId, @QueryParam("visitor_id") int visitorId) {
         if (visitorId == 0)
-            return null;
+            return 0;   // TODO throw 404
 
         return viewService.createView(hostId, visitorId);
     }

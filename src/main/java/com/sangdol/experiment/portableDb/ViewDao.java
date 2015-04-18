@@ -74,10 +74,7 @@ public class ViewDao {
         return views;
     }
 
-    public View createView(int hostId, int visitorId) {
-        // TODO think about the discrepancy between date in db and returning date
-        DateTime now = DateTime.now();
-
+    public int createView(int hostId, int visitorId) {
         try (Connection connection = cp.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(
                     viewQuery.getInsert(hostId));
@@ -88,7 +85,7 @@ public class ViewDao {
             throw new RuntimeException(e);
         }
 
-        return new View(visitorId, now);
+        return hostId;
     }
 
     public void clear() {

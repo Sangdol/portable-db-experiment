@@ -17,7 +17,7 @@ public class ViewService {
         return viewDao.getLatest10Visitors(userId);
     }
 
-    public View createView(int hostId, int visitorId) {
+    public int createView(int hostId, int visitorId) {
         return viewDao.createView(hostId, visitorId);
     }
 
