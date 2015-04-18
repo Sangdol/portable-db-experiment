@@ -19,9 +19,7 @@ public class ViewApplication extends Application<ViewConfiguration>{
     }
 
     @Override
-    public void initialize(Bootstrap<ViewConfiguration> bootstrap) {
-
-    }
+    public void initialize(Bootstrap<ViewConfiguration> bootstrap) {}
 
     @Override
     public void run(ViewConfiguration configuration, Environment environment) throws ClassNotFoundException {
@@ -32,6 +30,7 @@ public class ViewApplication extends Application<ViewConfiguration>{
         final ViewService viewService = new ViewService(viewDao);
         final ViewResource resource = new ViewResource(viewService);
 
+        environment.healthChecks().register("database", new DatabaseHealthCheck(cp));
         environment.jersey().register(resource);
     }
 }
