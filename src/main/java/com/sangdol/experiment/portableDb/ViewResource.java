@@ -12,10 +12,10 @@ import java.util.List;
 @Path("/user")
 @Produces(MediaType.APPLICATION_JSON)
 public class ViewResource {
-    private ViewService viewService;
+    private ViewDao viewDao;
 
-    public ViewResource(ViewService viewService) {
-        this.viewService = viewService;
+    public ViewResource(ViewDao viewDao) {
+        this.viewDao = viewDao;
     }
 
     @GET
@@ -23,7 +23,7 @@ public class ViewResource {
     public List<View> viewList(@PathParam("id") int hostId) {
         checkValidity(hostId);
 
-        return viewService.getLatest10Visitors(hostId);
+        return viewDao.getLatest10Visitors(hostId);
     }
 
     @POST
@@ -31,7 +31,7 @@ public class ViewResource {
     public int createView(@PathParam("id") int hostId, @QueryParam("visitor_id") int visitorId) {
         checkValidity(visitorId);
 
-        return viewService.createView(hostId, visitorId);
+        return viewDao.createView(hostId, visitorId);
     }
 
     private void checkValidity(int userId) {
@@ -42,13 +42,13 @@ public class ViewResource {
     @POST
     @Path("clear")
     public String clear() {
-        viewService.clear();
+        viewDao.clear();
         return "Success";
     }
 
     @GET
     @Path("view-counts")
     public List<Integer> viewCount() {
-        return viewService.getAllViewCounts();
+        return viewDao.getAllViewCounts();
     }
 }
