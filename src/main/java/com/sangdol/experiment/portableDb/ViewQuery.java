@@ -28,7 +28,7 @@ public class ViewQuery {
             sb.append(" id BIGINT PRIMARY KEY AUTO_INCREMENT, ");
             sb.append(" host_id INT, ");
             sb.append(" visitor_id INT, ");
-            sb.append(" date DATETIME ");
+            sb.append(" date TIMESTAMP ");
             sb.append(" ); ");
             // Create Index
             sb.append(" CREATE INDEX ON ").append(table);
