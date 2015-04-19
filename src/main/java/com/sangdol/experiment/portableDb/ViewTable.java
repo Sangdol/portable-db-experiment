@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Manage horizontally split tables name.
+ * Manage names of horizontally split table.
  * To reduce database latencies, this class uses a divide and conquer strategy by separating tables.
  * Each HOST_COUNT_IN_TABLE number of hosts are allocated to a table.
  *

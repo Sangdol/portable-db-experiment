@@ -24,9 +24,10 @@ public class ViewApplication extends Application<ViewConfiguration>{
     @Override
     public void run(ViewConfiguration configuration, Environment environment) throws ClassNotFoundException {
         final ViewTable viewTable = new ViewTable();
-        final ViewQuery viewQuery = new ViewQuery(viewTable);
+        final ViewSimpleQuery viewSimpleQuery = new ViewSimpleQuery(viewTable);
+        final ViewBatchQuery viewBatchQuery = new ViewBatchQuery(viewTable);
         final JdbcConnectionPool cp = JdbcConnectionPool.create("jdbc:h2:./view", "sa", ""); // TODO move to config
-        final ViewDao viewDao = new ViewDao(cp, viewQuery);
+        final ViewDao viewDao = new ViewDao(cp, viewSimpleQuery, viewBatchQuery);
         final ViewService viewService = new ViewService(viewDao);
         final ViewResource resource = new ViewResource(viewService);
 

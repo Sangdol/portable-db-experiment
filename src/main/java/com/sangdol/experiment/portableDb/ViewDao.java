@@ -17,11 +17,13 @@ import static com.sangdol.experiment.portableDb.ViewTable.TABLE_PREFIX;
 public class ViewDao {
     public static final DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS");
     private final JdbcConnectionPool cp;
-    private final ViewQuery viewQuery;
+    private final ViewSimpleQuery viewSimpleQuery;
+    private final ViewBatchQuery viewBatchQuery;
 
-    public ViewDao(JdbcConnectionPool cp, ViewQuery viewQuery) throws ClassNotFoundException {
+    public ViewDao(JdbcConnectionPool cp, ViewSimpleQuery viewSimpleQuery, ViewBatchQuery viewBatchQuery) throws ClassNotFoundException {
         this.cp = cp;
-        this.viewQuery = viewQuery;
+        this.viewSimpleQuery = viewSimpleQuery;
+        this.viewBatchQuery = viewBatchQuery;
 
         // Need to load the driver first
         // http://www.h2database.com/html/tutorial.html#connecting_using_jdbc
@@ -40,9 +42,11 @@ public class ViewDao {
             if (hasCreatedTables(connection))
                 return;
 
-            PreparedStatement statement = connection.prepareStatement(
-                    viewQuery.getCreateTables());
-            statement.executeUpdate();
+            for (String queries : viewBatchQuery.getCreateTablesList()) {
+                PreparedStatement statement = connection.prepareStatement(queries);
+                statement.executeUpdate();
+                statement.close();
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -53,6 +57,7 @@ public class ViewDao {
         ResultSet meta = connection.getMetaData().getTables(null, null,
                 TABLE_PREFIX.toUpperCase() + "%", new String[]{"TABLE"});
         meta.last();
+        // TODO check by comparing table counts.. then need to drop.. then throw exception
         return meta.getRow() > 0;
     }
 
@@ -61,7 +66,7 @@ public class ViewDao {
         List<View> views = new ArrayList<>();
         try (Connection connection = cp.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(
-                    viewQuery.getSelectLatest10(hostId));
+                    viewSimpleQuery.getSelectLatest10(hostId));
             statement.setInt(1, hostId);
 
             ResultSet rs = statement.executeQuery();
@@ -81,7 +86,7 @@ public class ViewDao {
     public int createView(int hostId, int visitorId) {
         try (Connection connection = cp.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(
-                    viewQuery.getInsert(hostId));
+                    viewSimpleQuery.getInsert(hostId));
             statement.setInt(1, hostId);
             statement.setInt(2, visitorId);
             statement.executeUpdate();
@@ -94,9 +99,11 @@ public class ViewDao {
 
     public void clear() {
         try (Connection connection = cp.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(
-                    viewQuery.getDeleteAllExceptRecent10());
-            statement.executeUpdate();
+            for (String queries : viewBatchQuery.getDeleteTablesList()) {
+                PreparedStatement statement = connection.prepareStatement(queries);
+                statement.executeUpdate();
+                statement.close();
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -104,15 +111,16 @@ public class ViewDao {
 
     public List<Integer> getAllViewCounts() {
         try (Connection connection = cp.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(
-                    viewQuery.getSelectAllCounts());
-            ResultSet rs = statement.executeQuery();
-
             List<Integer> counts = new ArrayList<>();
-            while (rs.next()) {
-                counts.add(rs.getInt(1));
-            }
+            for (String queries : viewBatchQuery.getSelectCountsList()) {
+                PreparedStatement statement = connection.prepareStatement(queries);
+                ResultSet rs = statement.executeQuery();
 
+                while (rs.next()) {
+                    counts.add(rs.getInt(1));
+                }
+                statement.close();
+            }
             return counts;
         } catch (SQLException e) {
             throw new RuntimeException(e);

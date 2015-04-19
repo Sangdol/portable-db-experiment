@@ -21,7 +21,8 @@ import static org.mockito.Mockito.*;
 public class ViewDaoTest {
     private List<String> tables = new ArrayList<>();
     private ViewTable viewTable = mock(ViewTable.class);
-    private ViewQuery viewQuery = new ViewQuery(viewTable);
+    private ViewSimpleQuery viewSimpleQuery = new ViewSimpleQuery(viewTable);
+    private ViewBatchQuery viewBatchQuery = new ViewBatchQuery(viewTable);
     private JdbcConnectionPool cp = JdbcConnectionPool.create("jdbc:h2:mem:h2-test-db", "sa", "");
     private ViewDao viewDao;
 
@@ -33,7 +34,7 @@ public class ViewDaoTest {
         when(viewTable.getAll()).thenReturn(tables);
         when(viewTable.get(anyInt())).thenReturn("table1");
 
-        viewDao = new ViewDao(cp, viewQuery);
+        viewDao = new ViewDao(cp, viewSimpleQuery, viewBatchQuery);
     }
 
     @After
