@@ -26,7 +26,10 @@ public class ViewApplication extends Application<ViewConfiguration>{
         final ViewTable viewTable = new ViewTable();
         final ViewSimpleQuery viewSimpleQuery = new ViewSimpleQuery(viewTable);
         final ViewBatchQuery viewBatchQuery = new ViewBatchQuery(viewTable);
-        final JdbcConnectionPool cp = JdbcConnectionPool.create("jdbc:h2:./view", "sa", ""); // TODO move to config
+
+        // AUTO_SERVER=TRUE enables Automatic Mixed Mode which allows access of multiple processes.
+        // Refer to http://h2database.com/html/features.html#auto_mixed_mode
+        final JdbcConnectionPool cp = JdbcConnectionPool.create("jdbc:h2:./view;AUTO_SERVER=TRUE", "sa", "");
         final ViewDao viewDao = new ViewDao(cp, viewSimpleQuery, viewBatchQuery);
         final ViewResource resource = new ViewResource(viewDao);
 
