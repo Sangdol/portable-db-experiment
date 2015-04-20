@@ -1,4 +1,4 @@
-package com.sangdol.experiment.portableDb;
+package com.sangdol.experiment.portableDb.healthcheck;
 
 import com.codahale.metrics.health.HealthCheck;
 import org.h2.jdbcx.JdbcConnectionPool;

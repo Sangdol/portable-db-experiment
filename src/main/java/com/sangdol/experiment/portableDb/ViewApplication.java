@@ -1,5 +1,6 @@
 package com.sangdol.experiment.portableDb;
 
+import com.sangdol.experiment.portableDb.healthcheck.DatabaseHealthCheck;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
