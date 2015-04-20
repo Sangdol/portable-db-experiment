@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class ViewTable {
     public static final String TABLE_PREFIX = "true_view";
-    private static final int TABLE_COUNT = 100;
+    public static final int TABLE_COUNT = 100;
     private static final int HOST_COUNT_IN_TABLE = 100;
     private static final List<String> names = new ArrayList<>();
 

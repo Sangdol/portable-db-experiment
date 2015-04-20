@@ -9,8 +9,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.sangdol.experiment.portableDb.ViewTable.TABLE_PREFIX;
-
 /**
  * @author hugh
  */
@@ -50,10 +48,20 @@ public class ViewDao {
     private boolean hasCreatedTables(Connection connection) throws SQLException {
         // You need to search tables in upper case even if you created tables in lower case
         ResultSet meta = connection.getMetaData().getTables(null, null,
-                TABLE_PREFIX.toUpperCase() + "%", new String[]{"TABLE"});
+                ViewTable.TABLE_PREFIX.toUpperCase() + "%", new String[]{"TABLE"});
+
         meta.last();
-        // TODO check by comparing table counts.. then need to drop.. then throw exception
-        return meta.getRow() > 0;
+        int rowCount = meta.getRow();
+        if (rowCount == 0) {
+            return false;
+        } else if (rowCount == ViewTable.TABLE_COUNT) {
+            return true;
+        } else {
+            throw new IllegalStateException(String.format(
+                    "The number existing tables is different from TABLE_COUNT. " +
+                    "Please remove the database file manually and try again. " +
+                    "(Existing table count: %d, TABLE_COUNT: %d)", rowCount, ViewTable.TABLE_COUNT));
+        }
     }
 
 
