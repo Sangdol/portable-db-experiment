@@ -1,0 +1,7 @@
+database:
+  user: sa
+  password:
+#  AUTO_SERVER=TRUE enables Automatic Mixed Mode which allows access of multiple processes.
+#  http://h2database.com/html/features.html#auto_mixed_mode
+  url: "jdbc:h2:./true-h2;AUTO_SERVER=TRUE"
+

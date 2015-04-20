@@ -25,11 +25,6 @@ public class ViewDao {
         this.viewSimpleQuery = viewSimpleQuery;
         this.viewBatchQuery = viewBatchQuery;
 
-        // Need to load the driver first
-        // http://www.h2database.com/html/tutorial.html#connecting_using_jdbc
-        Class.forName("org.h2.Driver");
-
-        cp.setMaxConnections(50);   // TODO What would be a good max connection count?
         createTablesIfNotExist();
     }
 
