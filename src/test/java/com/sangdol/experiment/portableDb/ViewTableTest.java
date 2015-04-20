@@ -8,7 +8,7 @@ import static org.hamcrest.Matchers.*;
 
 public class ViewTableTest {
 
-    private ViewTable viewTable = new ViewTable();
+    private ViewTable viewTable = new ViewTable("true_view", 100);
 
     @Test
     public void shouldHave100Names() {

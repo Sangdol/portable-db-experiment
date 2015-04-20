@@ -28,13 +28,15 @@ public class ViewDaoTest {
 
     @Before
     public void setup() throws Exception {
+        tables.add("table0");
         tables.add("table1");
-        tables.add("table2");
 
         when(viewTable.getAll()).thenReturn(tables);
-        when(viewTable.get(anyInt())).thenReturn("table1");
+        when(viewTable.get(anyInt())).thenReturn("table0");
+        when(viewTable.getPrefix()).thenReturn("table");
+        when(viewTable.getCount()).thenReturn(2);
 
-        viewDao = new ViewDao(cp, viewSimpleQuery, viewBatchQuery);
+        viewDao = new ViewDao(cp, viewSimpleQuery, viewBatchQuery, viewTable);
     }
 
     @After

@@ -17,11 +17,17 @@ public class ViewDao {
     private final JdbcConnectionPool cp;
     private final ViewSimpleQuery viewSimpleQuery;
     private final ViewBatchQuery viewBatchQuery;
+    private final int tableCount;
+    private final String tablePrefix;
 
-    public ViewDao(JdbcConnectionPool cp, ViewSimpleQuery viewSimpleQuery, ViewBatchQuery viewBatchQuery) throws ClassNotFoundException {
+    public ViewDao(JdbcConnectionPool cp, ViewSimpleQuery viewSimpleQuery,
+            ViewBatchQuery viewBatchQuery, ViewTable viewTable)
+            throws ClassNotFoundException {
         this.cp = cp;
         this.viewSimpleQuery = viewSimpleQuery;
         this.viewBatchQuery = viewBatchQuery;
+        this.tableCount = viewTable.getCount();
+        this.tablePrefix = viewTable.getPrefix();
 
         createTablesIfNotExist();
     }
@@ -48,19 +54,19 @@ public class ViewDao {
     private boolean hasCreatedTables(Connection connection) throws SQLException {
         // You need to search tables in upper case even if you created tables in lower case
         ResultSet meta = connection.getMetaData().getTables(null, null,
-                ViewTable.TABLE_PREFIX.toUpperCase() + "%", new String[]{"TABLE"});
+                tablePrefix.toUpperCase() + "%", new String[]{"TABLE"});
 
         meta.last();
         int rowCount = meta.getRow();
         if (rowCount == 0) {
             return false;
-        } else if (rowCount == ViewTable.TABLE_COUNT) {
+        } else if (rowCount == tableCount) {
             return true;
         } else {
             throw new IllegalStateException(String.format(
                     "The number existing tables is different from TABLE_COUNT. " +
                     "Please remove the database file manually and try again. " +
-                    "(Existing table count: %d, TABLE_COUNT: %d)", rowCount, ViewTable.TABLE_COUNT));
+                    "(Existing table count: %d, TABLE_COUNT: %d)", rowCount, tableCount));
         }
     }
 

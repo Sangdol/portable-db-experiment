@@ -12,14 +12,18 @@ import java.util.List;
  * @author hugh
  */
 public class ViewTable {
-    public static final String TABLE_PREFIX = "true_view";
-    public static final int TABLE_COUNT = 100;
-    private static final int HOST_COUNT_IN_TABLE = 100;
+    private static final int HOST_COUNT_IN_TABLE = 1000;
     private static final List<String> names = new ArrayList<>();
 
-    static {
-        for (int i = 0; i < TABLE_COUNT; i++) {
-            names.add(TABLE_PREFIX + i);
+    public final String tablePrefix;
+    public final int tableCount;
+
+    public ViewTable(String tablePrefix, int tableCount) {
+        this.tablePrefix = tablePrefix;
+        this.tableCount = tableCount;
+
+        for (int i = 0; i < tableCount; i++) {
+            names.add(tablePrefix + i);
         }
     }
 
@@ -37,9 +41,17 @@ public class ViewTable {
     public String get(int userId) {
         int tableNumber = (userId - 1) / HOST_COUNT_IN_TABLE;
 
-        if (tableNumber >= TABLE_COUNT)
+        if (tableNumber >= tableCount)
             throw new WebApplicationException(404);
 
-        return TABLE_PREFIX + tableNumber;
+        return tablePrefix + tableNumber;
+    }
+
+    public int getCount() {
+        return tableCount;
+    }
+
+    public String getPrefix() {
+        return tablePrefix;
     }
 }

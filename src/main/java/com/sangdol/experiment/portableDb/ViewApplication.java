@@ -24,14 +24,14 @@ public class ViewApplication extends Application<ViewConfiguration>{
 
     @Override
     public void run(ViewConfiguration configuration, Environment environment) throws ClassNotFoundException {
-        final ViewTable viewTable = new ViewTable();
+        final ViewTable viewTable = new ViewTable("true_view", 100); // Set 100 for faster test
         final ViewSimpleQuery viewSimpleQuery = new ViewSimpleQuery(viewTable);
         final ViewBatchQuery viewBatchQuery = new ViewBatchQuery(viewTable);
 
         final JdbcConnectionPool cp = JdbcConnectionPool.create(configuration.getDataSource());
-        cp.setMaxConnections(50);   // TODO What would be a good max connection count?
+        cp.setMaxConnections(100);
 
-        final ViewDao viewDao = new ViewDao(cp, viewSimpleQuery, viewBatchQuery);
+        final ViewDao viewDao = new ViewDao(cp, viewSimpleQuery, viewBatchQuery, viewTable);
         final ViewResource resource = new ViewResource(viewDao);
 
         environment.healthChecks().register("database", new DatabaseHealthCheck(cp));

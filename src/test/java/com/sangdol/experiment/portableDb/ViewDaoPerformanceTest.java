@@ -3,6 +3,7 @@ package com.sangdol.experiment.portableDb;
 import com.sangdol.experiment.portableDb.ViewBatchQuery;
 import org.h2.jdbcx.JdbcConnectionPool;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -25,12 +26,19 @@ import static org.mockito.Mockito.*;
  */
 @Ignore // May take too long
 public class ViewDaoPerformanceTest {
-    final int TABLE_SIZE = 100000;
+    final int TABLE_SIZE = 10000;
+    final String TABLE_PREFIX = "true_view";
     private String dbFile = "./h2-test-db";
     private ViewTable viewTable = mock(ViewTable.class);
     private ViewBatchQuery viewBatchQuery = new ViewBatchQuery(viewTable);
     private JdbcConnectionPool cp = JdbcConnectionPool.create("jdbc:h2:" + dbFile, "sa", "");
     private ViewDao viewDao;
+
+    @Before
+    public void setup() {
+        when(viewTable.getCount()).thenReturn(TABLE_SIZE);
+        when(viewTable.getPrefix()).thenReturn(TABLE_PREFIX);
+    }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @After
@@ -44,7 +52,7 @@ public class ViewDaoPerformanceTest {
 
         long start = System.currentTimeMillis();
         when(viewTable.getAll()).thenReturn(getTablesOf());
-        viewDao = new ViewDao(cp, null, viewBatchQuery);
+        viewDao = new ViewDao(cp, null, viewBatchQuery, viewTable);
         long end = System.currentTimeMillis();
         System.out.println(String.format("Table Creation took: %d milliseconds", end - start));
 
@@ -60,7 +68,7 @@ public class ViewDaoPerformanceTest {
 
         long start = System.currentTimeMillis();
         when(viewTable.getAll()).thenReturn(getTablesOf());
-        viewDao = new ViewDao(cp, null, viewBatchQuery);
+        viewDao = new ViewDao(cp, null, viewBatchQuery, viewTable);
         long end = System.currentTimeMillis();
         System.out.println(String.format("Table Creation took: %d milliseconds", end - start));
 
@@ -79,7 +87,7 @@ public class ViewDaoPerformanceTest {
         List<String> tables = new ArrayList<>();
 
         for (int i = 0; i < TABLE_SIZE; i++) {
-            tables.add("true_view" + i);
+            tables.add(TABLE_PREFIX + i);
         }
 
         return tables;
