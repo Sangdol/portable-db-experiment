@@ -18,6 +18,9 @@ public class ViewResource {
         this.viewDao = viewDao;
     }
 
+    /**
+     * Returns 10 visitors with date in the order in which they recently visited.
+     */
     @GET
     @Path("{id}")
     public List<View> viewList(@PathParam("id") int hostId) {
@@ -39,6 +42,9 @@ public class ViewResource {
             throw new WebApplicationException(404);
     }
 
+    /**
+     * Clears redundant data in the database.
+     */
     @POST
     @Path("clear")
     public String clear() {
@@ -46,6 +52,9 @@ public class ViewResource {
         return "Success";
     }
 
+    /**
+     * Returns record count of each table in the database.
+     */
     @GET
     @Path("view-counts")
     public List<Integer> viewCount() {

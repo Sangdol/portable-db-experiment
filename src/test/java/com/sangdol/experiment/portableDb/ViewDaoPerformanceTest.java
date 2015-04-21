@@ -18,13 +18,13 @@ import static org.mockito.Mockito.*;
 /**
  * To test how long it takes for each operation depends on the count of tables.
  * The result would be dependant on the performance of machine,
- * but we can get rough information from it.
+ * but we can get some insight from the tests.
  *
- * As this test is executed without any data, it'll take more time in practice.
+ * As these tests are executed without any data, it'll take more time in practice.
  *
  * @author hugh
  */
-@Ignore // May take too long
+@Ignore // May take too long / No need to run every time
 public class ViewDaoPerformanceTest {
     final int TABLE_SIZE = 10000;
     final String TABLE_PREFIX = "true_view";

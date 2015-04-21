@@ -91,6 +91,7 @@ public class ViewBatchQuery {
 
     /**
      * Returns queries which delete rows except recent 10 rows from all tables.
+     *
      * Deleting operation is very slow because we need to use nested select statement.
      * This query can be improved if we use a database which supports better functions.
      * Lacking function of assignment inside CASE statement makes it impossible
