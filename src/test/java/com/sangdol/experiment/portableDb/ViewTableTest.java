@@ -18,12 +18,12 @@ public class ViewTableTest {
     @Test
     public void testGet() {
         assertThat(viewTable.get(1), is("true_view0"));
-        assertThat(viewTable.get(100), is("true_view0"));
-        assertThat(viewTable.get(101), is("true_view1"));
-        assertThat(viewTable.get(199), is("true_view1"));
-        assertThat(viewTable.get(200), is("true_view1"));
-        assertThat(viewTable.get(201), is("true_view2"));
-        assertThat(viewTable.get(1000), is("true_view9"));
-        assertThat(viewTable.get(1100), is("true_view10"));
+        assertThat(viewTable.get(1000), is("true_view0"));
+        assertThat(viewTable.get(1001), is("true_view1"));
+        assertThat(viewTable.get(1999), is("true_view1"));
+        assertThat(viewTable.get(2000), is("true_view1"));
+        assertThat(viewTable.get(2001), is("true_view2"));
+        assertThat(viewTable.get(10000), is("true_view9"));
+        assertThat(viewTable.get(11000), is("true_view10"));
     }
 }

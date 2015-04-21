@@ -13,8 +13,7 @@ import java.util.List;
  */
 public class ViewTable {
     private static final int HOST_COUNT_IN_TABLE = 1000;
-    private static final List<String> names = new ArrayList<>();
-
+    private final List<String> names = new ArrayList<>();
     public final String tablePrefix;
     public final int tableCount;
 
