@@ -28,7 +28,7 @@ public class ViewBatchQuery {
         String getQueries(List<String> strings);
     }
 
-    public List<String> getQueriesList(ViewBatchQueryStrategy strategy) {
+    private List<String> getQueriesList(ViewBatchQueryStrategy strategy) {
         List<String> list = new ArrayList<>();
         List<String> tables = viewTable.getAll();
 
