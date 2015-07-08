@@ -24,7 +24,7 @@ public class ViewApplication extends Application<ViewConfiguration>{
 
     @Override
     public void run(ViewConfiguration configuration, Environment environment) throws ClassNotFoundException {
-        final ViewTable viewTable = new ViewTable("true_view", 100); // Set 100 for faster test
+        final ViewTable viewTable = new ViewTable("view", 100); // Set 100 for faster test
         final ViewSimpleQuery viewSimpleQuery = new ViewSimpleQuery(viewTable);
         final ViewBatchQuery viewBatchQuery = new ViewBatchQuery(viewTable);
 

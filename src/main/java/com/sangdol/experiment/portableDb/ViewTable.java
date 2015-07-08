@@ -35,7 +35,7 @@ public class ViewTable {
 
     /**
      * Returns the allocated table name to the userId.
-     * The index of table name is 0-based, e.g. true_view0, true_view1...
+     * The index of table name is 0-based, e.g. view0, view1...
      */
     public String get(int userId) {
         int tableNumber = (userId - 1) / HOST_COUNT_IN_TABLE;

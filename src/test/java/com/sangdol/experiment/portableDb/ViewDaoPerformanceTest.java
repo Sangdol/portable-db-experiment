@@ -27,7 +27,7 @@ import static org.mockito.Mockito.*;
 @Ignore // May take too long / No need to run every time
 public class ViewDaoPerformanceTest {
     final int TABLE_SIZE = 10000;
-    final String TABLE_PREFIX = "true_view";
+    final String TABLE_PREFIX = "view";
     private String dbFile = "./h2-test-db";
     private ViewTable viewTable = mock(ViewTable.class);
     private ViewBatchQuery viewBatchQuery = new ViewBatchQuery(viewTable);
