@@ -22,7 +22,7 @@ public class DatabaseHealthCheck extends HealthCheck {
             if (connection.isValid(1000)) {
                 return Result.healthy();
             } else {
-                return Result.unhealthy("Connection is not vaild.");
+                return Result.unhealthy("Connection is not valid.");
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
