@@ -1,6 +1,5 @@
 package com.sangdol.experiment.portableDb;
 
-import com.sangdol.experiment.portableDb.ViewSimpleQuery;
 import org.junit.Before;
 import org.junit.Test;
 

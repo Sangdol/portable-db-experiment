@@ -1,6 +1,5 @@
 package com.sangdol.experiment.portableDb;
 
-import com.sangdol.experiment.portableDb.ViewBatchQuery;
 import org.h2.jdbcx.JdbcConnectionPool;
 import org.junit.After;
 import org.junit.Before;

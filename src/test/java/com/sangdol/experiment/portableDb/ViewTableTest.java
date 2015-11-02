@@ -1,6 +1,5 @@
 package com.sangdol.experiment.portableDb;
 
-import com.sangdol.experiment.portableDb.ViewTable;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
